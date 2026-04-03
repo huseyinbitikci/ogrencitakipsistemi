@@ -1,23 +1,22 @@
-const jwt=require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-const requireAuth=(req,res,next)=>{
-    const token=req.cookies.jwt
+const requireAuth = (req, res, next) => {
+    const token = req.cookies.jwt;
 
     if (token) {
-        jwt.verify(token,'gizli kelime',(err,decodedToken)=>{
+        jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
             if (err) {
-                console.log(err)
-                res.redirect('/login')
-            }else{
-                console.log(decodedToken)
-                next()
+                console.error('JWT verification failed:', err.message);
+                res.redirect('/login');
+            } else {
+                console.log('Authenticated user:', decodedToken);
+                req.user = decodedToken; // Kullanıcı bilgisini req'e ekle
+                next();
             }
-        })
-        
-    }else{
-        res.redirect('/login')
+        });
+    } else {
+        res.redirect('/login');
     }
 }
 
-
-module.exports={requireAuth}
+module.exports = {requireAuth};

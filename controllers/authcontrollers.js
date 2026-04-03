@@ -1,10 +1,10 @@
-const User =require('../models/users')
-const jwt=require('jsonwebtoken')
+const User = require('../models/users');
+const jwt = require('jsonwebtoken');
 
-const maxAge=60*60*24
+const maxAge = parseInt(process.env.JWT_EXPIRES_IN) || 86400; // 24 saat default
 
-const createtoken=(id)=>{
-   return jwt.sign({id},'gizli kelime',{expiresIn:maxAge})
+const createtoken = (id) => {
+    return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: maxAge});
 }
 
 
@@ -12,17 +12,25 @@ const login_get=(req,res)=>{
     res.render("login",{layout: false})
 }
 
-const login_post= async(req,res)=>{
-    const {username,password}=req.body
-    try{
-        const user =await User.giris(username,password)
-        console.log(user._id)
-        const token= createtoken(user._id)
-        res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000}) 
-        res.redirect('/index')
-    }
-    catch(e){
-        console.log(e)
+const login_post = async (req, res) => {
+    const {username, password} = req.body;
+    try {
+        const user = await User.giris(username, password);
+        console.log(user._id);
+        const token = createtoken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: maxAge * 1000,
+            secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+            sameSite: 'strict' // CSRF protection
+        });
+        res.redirect('/index');
+    } catch (e) {
+        console.log(e);
+        res.status(400).render("login", {
+            layout: false,
+            error: e.message
+        });
     }
 }
 
