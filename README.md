@@ -2,7 +2,7 @@
 
 JavaScript ile Node.js üzerinden Express kütüphanesini kullanarak ve Handlebars (HBS) yapısı ile öğrenci takip sistemi geliştirdim.
 
-**Şu anda kullanımdadır:** [egitimyildizi.com](https://egitimyildizi.com)
+
 
 ## 📋 Özellikler
 
