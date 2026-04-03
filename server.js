@@ -84,12 +84,17 @@ app.set('view engine', '.hbs');
 // Routes - Authentication aktif edildi
 app.use("/", routers.auth);
 
-// Modern modular routes (yeni sistem)
-app.use("/", requireAuth, routers.students); // Students routes
-app.use("/", requireAuth, routers.books);    // Books routes
+// Modern modular routes (yeni sistem - öncelikli)
+app.use("/", requireAuth, routers.dashboard);  // Dashboard routes
+app.use("/", requireAuth, routers.students);   // Students routes
+app.use("/", requireAuth, routers.books);      // Books routes
+app.use("/", requireAuth, routers.content);    // Content management routes
+app.use("/", requireAuth, routers.tasks);      // Assignment/Task routes
+app.use("/", requireAuth, routers.reports);    // Reports routes
 
 // Legacy routes (eski sistem - kademeli olarak kaldırılacak)
-app.use("/", requireAuth, routers.app); // Artık korumalı
+// NOT: Modern route'lar aynı path'leri handle ediyorsa legacy'ler çalışmaz
+app.use("/", requireAuth, routers.app);
 app.use("/api", routers.api);
 
 // Global error handler
